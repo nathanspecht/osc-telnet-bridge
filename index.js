@@ -1,5 +1,6 @@
 const initOsc = require('./init-osc')
 const initTelnet = require('./init-telnet')
+const customValues = require('./custom-values')
 
 start()
 
@@ -10,7 +11,7 @@ async function start() {
 
   function messageHandler(message) {
     if (!message?.address) return
-    const [, page, inputType, command] = message.address.split('/')
+    let [, page, inputType, command, column, row] = message.address.split('/')
 
     let value
 
@@ -18,17 +19,28 @@ async function start() {
       value = message.args[0] === 0 ? 'off' : 'on'
     }
 
-    if (inputType === 'value') {
+    if (inputType === 'number') {
       value = message.args[0]
     }
 
-    console.log({ page, inputType, command, value })
+    if (inputType === 'custom') {
+      if (message.args[0] === 1) {
+        column = parseInt(column) - 1
+        row = parseInt(row) - 1
+        value = customValues[command][row][column]
+      }
+    }
 
-    connection.exec(
-      `control:\r\n${command}: ${value}\r\n\r\n`,
-      function (err, response) {
-        if (response) console.log(response)
-      },
-    )
+    if (typeof value !== 'undefined') {
+      console.log(message)
+      console.log({ page, inputType, command, value, row, column })
+
+      connection.exec(
+        `control:\r\n${command}: ${value}\r\n\r\n`,
+        function (err, response) {
+          if (response) console.log(response)
+        },
+      )
+    }
   }
 }
