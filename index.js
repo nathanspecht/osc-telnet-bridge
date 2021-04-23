@@ -9,17 +9,26 @@ async function start() {
   initOsc(messageHandler)
 
   function messageHandler(message) {
-    console.log(message)
-    if (message.address === '/test/toggle1') {
-      if (message.args) {
-        const color = message.args[0] === 0 ? 'green' : 'blue'
-        connection.exec(
-          `control:\r\nbacking color: ${color}\r\n\r\n`,
-          function (err, response) {
-            console.log('Response: ', response)
-          },
-        )
-      }
+    if (!message?.address) return
+    const [, page, inputType, command] = message.address.split('/')
+
+    let value
+
+    if (inputType === 'toggle') {
+      value = message.args[0] === 0 ? 'off' : 'on'
     }
+
+    if (inputType === 'value') {
+      value = message.args[0]
+    }
+
+    console.log({ page, inputType, command, value })
+
+    connection.exec(
+      `control:\r\n${command}: ${value}\r\n\r\n`,
+      function (err, response) {
+        if (response) console.log(response)
+      },
+    )
   }
 }

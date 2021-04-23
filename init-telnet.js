@@ -14,12 +14,6 @@ module.exports = function () {
     connection.on('ready', function (prompt) {
       console.log('telnet connection ready')
       resolve(connection)
-      // connection.exec(
-      // 'control:\r\nbacking color: blue\r\n\r\n',
-      // function (err, response) {
-      // console.log('Response: ', response)
-      // },
-      // )
     })
 
     connection.on('timeout', function () {
