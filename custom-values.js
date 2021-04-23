@@ -1,3 +1,8 @@
 module.exports = {
-  'monitor out': [['program'], ['fg'], ['bg'], ['combined matte']],
+  'monitor out': [
+	['program', 'internal matte'],
+        ['fg', 'fill'],
+        ['bg', 'layer in'],
+        ['combined matte', 'background matte in']
+  ],
 }
